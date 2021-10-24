@@ -3,6 +3,7 @@ import { useState } from 'react'
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import Swal from 'sweetalert2';
 
 interface Task {
   id: number;
@@ -15,15 +16,31 @@ export function TaskList() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if(newTaskTitle.trim()){
+      const newTask:Task = {
+        id: Math.random()*100,
+        title: newTaskTitle,
+        isComplete: false
+      }
+      setTasks([...tasks, newTask])
+      setNewTaskTitle('')
+    }else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'you cannot add an untitled task'
+      })
+    }
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const taskUpdate = tasks.map(task => task.id === id ? {...task, isComplete:!task.isComplete} : task)
+    setTasks(taskUpdate)
   }
 
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    const taskFilter = tasks.filter(task => task.id !== id)
+    setTasks(taskFilter)
   }
 
   return (
